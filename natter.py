@@ -1170,12 +1170,14 @@ class UPnPDevice(object):
         return s[1]
 
     def _get_srv_dict(self, url):
+        services_d = {}
+
         try:
             xmlcontent = self._http_get(url).decode("utf-8", "ignore")
         except (OSError, socket.error, ValueError) as ex:
-            Logger.error("upnp: failed to load service from %s: %s" % (url, ex))
-            return
-        services_d = {}
+            Logger.warning("upnp: failed to load service from %s: %s" % (url, ex))
+            return services_d
+
         srv_str_l = re.findall(r"<service\s*>([\s\S]+?)</service\s*>", xmlcontent)
         for srv_str in srv_str_l:
             srv = UPnPService(self, bind_ip=self._bind_ip, interface=self._bind_interface)
@@ -1227,7 +1229,19 @@ class UPnPClient(object):
             self.router = None
         elif len(router_l) > 1:
             Logger.warning("upnp: multiple routers found: %s" % (router_l,))
-            self.router = router_l[0]
+
+            upnp_server_ip = os.getenv("UPNP_SERVER_IP")
+
+            if upnp_server_ip:
+                for router in router_l:
+                    if router.ipaddr == upnp_server_ip:
+                        self.router = router
+                        Logger.info("upnp: found user detected upnp server: %s" % upnp_server_ip)
+
+                if self.router is None:
+                    Logger.error("upnp: can not find user detected upnp server with ip %s !" % upnp_server_ip)
+            else:
+                self.router = router_l[0]
         else:
             self.router = router_l[0]
         return self.router
