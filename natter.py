@@ -1734,7 +1734,7 @@ def natter_main(show_title = True):
     if upnp_router:
         Logger.info("[UPnP] Found router %s" % upnp_router.ipaddr)
         try:
-            upnp.forward("", bind_port, bind_ip, bind_port, udp=udp_mode, duration=interval*3)
+            upnp.forward("", bind_port, bind_ip, to_port, udp=udp_mode, duration=interval*3)
         except (OSError, socket.error, ValueError) as ex:
             Logger.error("upnp: failed to forward port: %s" % ex)
         else:
