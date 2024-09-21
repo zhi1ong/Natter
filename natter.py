@@ -33,6 +33,7 @@ import struct
 import argparse
 import threading
 import subprocess
+from urllib.parse import urlparse
 
 __version__ = "2.1.1"
 
@@ -1552,7 +1553,7 @@ def natter_main(show_title = True):
              "'socat', 'gost' and 'socket'"
     )
     group.add_argument(
-        "-t", type=str, metavar="<address>", default="0.0.0.0",
+        "-t", type=str, metavar="<address>", default="",
         help="IP address of forward target"
     )
     group.add_argument(
@@ -1579,6 +1580,16 @@ def natter_main(show_title = True):
     to_port = args.p
     keep_retry = args.r
     exit_when_changed = args.q
+
+    if to_ip == "":
+        qb_web_url = os.getenv("QB_WEB_URL")
+        if qb_web_url:
+            to_ip = urlparse(qb_web_url).hostname
+        else:
+            tr_web_url = os.getenv("TR_WEB_URL")
+            if tr_web_url:
+                to_ip = urlparse(tr_web_url).hostname
+
 
     sys.tracebacklimit = 0
     if verbose:
