@@ -1390,9 +1390,9 @@ def check_docker_network():
     except socket.gaierror:
         Logger.warning("check-docket-network: Cannot resolve hostname `%s`" % hostname)
         return
-    docker_macaddr = "02:42:" + ":".join(["%02x" % int(x) for x in ipaddr.split(".")])
-    if macaddr == docker_macaddr:
-        raise RuntimeError("Docker's `--net=host` option is required.")
+    # docker_macaddr = "02:42:" + ":".join(["%02x" % int(x) for x in ipaddr.split(".")])
+    # if macaddr == docker_macaddr:
+    #     raise RuntimeError("Docker's `--net=host` option is required.")
 
     if not os.path.isfile("/proc/sys/kernel/osrelease"):
         return
